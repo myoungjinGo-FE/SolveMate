@@ -1,95 +1,96 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+
+interface DecodedToken {
+  user_id: number;
+  exp: number;
+  iat: number;
+  jti: string;
+  token_type: string;
+}
+
+interface User {
+  id: number;
+  username: string;
+  nickname: string;
+  profile_picture: string | null;
+  kakao_id: string | null;
+}
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const router = useRouter();
+  const [username, setUsername] = useState<string | null>(null);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // `access_token` 가져오기
+        const accessToken = localStorage.getItem("access_token");
+        if (!accessToken) {
+          router.push("/login"); // login 페이지로 이동
+          return;
+        }
+
+        // JWT 파싱
+        const decoded: DecodedToken = jwtDecode(accessToken);
+        const userId = decoded.user_id;
+
+        // API 호출
+        const response = await fetch(
+          `${process.env.BACKEND_URL}/api/users/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("사용자 정보를 가져오는데 실패했습니다.");
+        }
+
+        const userData: User = await response.json();
+
+        // `username` 상태 업데이트
+        setUsername(userData.username);
+      } catch (error) {
+        console.error("에러 발생:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleLogout = () => {
+    // LocalStorage에서 토큰 삭제
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    alert("로그아웃되었습니다.");
+    // 홈 페이지로 이동 또는 리다이렉트 처리
+    window.location.href = "/";
+  };
+
+  return (
+    <>
+      <div>{username ? `Hello, ${username}` : "Loading..."}</div>
+      <button onClick={handleLogout} style={logoutButtonStyle}>
+        로그아웃
+      </button>
+    </>
   );
 }
+
+const logoutButtonStyle: React.CSSProperties = {
+  marginTop: "20px",
+  padding: "10px 20px",
+  backgroundColor: "#f44336",
+  color: "white",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "16px",
+};
