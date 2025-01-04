@@ -11,7 +11,7 @@ const SignupPage: NextPage = () => {
   const handleSignup = async (formData: SignupFormData) => {
     try {
       const response = await fetch(
-        `${process.env.BACKEND_URL}/api/users/sign-up`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sign-up`,
         {
           method: "POST",
           headers: {

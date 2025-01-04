@@ -24,9 +24,9 @@ export const SignupForm = ({ onSubmit }: SignupFormProps) => {
   });
 
   useEffect(() => {
-    const kakao_id = searchParams.get("kakao_id");
-    const username = searchParams.get("username");
-    const profile_image = searchParams.get("profile_image");
+    const kakao_id = searchParams && searchParams.get("kakao_id");
+    const username = searchParams && searchParams.get("username");
+    const profile_image = searchParams && searchParams.get("profile_image");
 
     if (kakao_id || username || profile_image) {
       setFormData((prev) => ({

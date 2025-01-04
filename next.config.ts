@@ -30,11 +30,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  env: {
-    BACKEND_URL: "http://localhost:8000",
-    KAKAO_CLIENT_ID: process.env.KAKAO_CLIENT_ID,
-    KAKAO_REDIRECT_URI: process.env.KAKAO_REDIRECT_URI,
-  },
 };
 
 export default nextConfig;

@@ -37,9 +37,8 @@ export default function Home() {
         const decoded: DecodedToken = jwtDecode(accessToken);
         const userId = decoded.user_id;
 
-        // API 호출
         const response = await fetch(
-          `${process.env.BACKEND_URL}/api/users/${userId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`,
           {
             method: "GET",
             headers: {
