@@ -1,153 +1,130 @@
-import { useEffect, useState } from "react";
+"use client";
+
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import styled from "styled-components";
+import { SignUpFormData } from "@/lib/types/auth";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const signupSchema = z.object({
+  username: z
+    .string()
+    .min(3, "사용자 이름은 최소 3자 이상이어야 합니다")
+    .max(50, "사용자 이름은 50자를 초과할 수 없습니다"),
+  nickname: z
+    .string()
+    .min(2, "닉네임은 최소 2자 이상이어야 합니다")
+    .max(50, "닉네임은 50자를 초과할 수 없습니다"),
+  profileImage: z.string().nullable().optional(),
+  kakaoId: z.string().nullable().optional(),
+});
+
+type SignupFormData = z.infer<typeof signupSchema>;
 
 interface SignupFormProps {
-  onSubmit: (formData: SignupFormData) => void;
+  onSubmit: (formData: SignUpFormData) => void;
 }
 
-export interface SignupFormData {
-  kakaoId?: string | null; // Optional 필드로 수정
-  username: string;
-  profileImage?: string | null; // Optional 필드로 수정
-  nickname: string;
-}
-
-export const SignupForm = ({ onSubmit }: SignupFormProps) => {
+export function SignupForm({ onSubmit }: SignupFormProps) {
   const searchParams = useSearchParams();
-  const [formData, setFormData] = useState<SignupFormData>({
-    kakaoId: null,
-    username: "",
-    profileImage: null,
-    nickname: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+    watch,
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      username: "",
+      nickname: "",
+      profileImage: null,
+      kakaoId: null,
+    },
   });
 
   useEffect(() => {
-    const kakao_id = searchParams && searchParams.get("kakao_id");
-    const username = searchParams && searchParams.get("username");
-    const profile_image = searchParams && searchParams.get("profile_image");
+    const kakao_id = searchParams?.get("kakao_id");
+    const username = searchParams?.get("username");
+    const profile_image = searchParams?.get("profile_image");
 
     if (kakao_id || username || profile_image) {
-      setFormData((prev) => ({
-        ...prev,
-        kakaoId: kakao_id || null,
-        username: username || "",
-        profileImage: profile_image || null,
-        nickname: username || "", // 카카오 이름을 기본 닉네임으로 설정
-      }));
+      reset({
+        kakaoId: kakao_id ?? undefined,
+        username: username ?? "",
+        profileImage: profile_image ?? undefined,
+        nickname: username ?? "", // 카카오 이름을 기본 닉네임으로 설정
+      });
     }
-  }, [searchParams]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+  }, [searchParams, reset]);
 
   return (
-    <StyledForm onSubmit={handleSubmit}>
-      <StyledImageWrapper>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-6 w-full max-w-md mx-auto p-8"
+    >
+      <div className="flex justify-center mb-6">
         <Image
-          src={formData.profileImage || "/images/default-profile.png"}
+          src={watch("profileImage") || "/images/default-profile.png"}
           alt="Profile"
           width={100}
           height={100}
-          style={{ borderRadius: "50%" }}
+          className="rounded-full"
         />
-      </StyledImageWrapper>
+      </div>
 
-      <StyledInputGroup>
-        <StyledLabel>사용자 이름</StyledLabel>
-        <StyledInput
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="username"
+          className="text-sm font-semibold text-gray-600"
+        >
+          사용자 이름
+        </label>
+        <input
+          id="username"
+          {...register("username")}
           type="text"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
+          className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-500"
           placeholder="사용자 이름을 입력해주세요"
-          required
         />
-      </StyledInputGroup>
+        {errors.username && (
+          <p className="text-sm text-red-500">{errors.username.message}</p>
+        )}
+      </div>
 
-      <StyledInputGroup>
-        <StyledLabel>닉네임</StyledLabel>
-        <StyledInput
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="nickname"
+          className="text-sm font-semibold text-gray-600"
+        >
+          닉네임
+        </label>
+        <input
+          id="nickname"
+          {...register("nickname")}
           type="text"
-          name="nickname"
-          value={formData.nickname}
-          onChange={handleChange}
+          className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-500"
           placeholder="닉네임을 입력해주세요"
-          required
         />
-      </StyledInputGroup>
+        {errors.nickname && (
+          <p className="text-sm text-red-500">{errors.nickname.message}</p>
+        )}
+      </div>
 
-      <StyledButton type="submit">가입 완료</StyledButton>
-    </StyledForm>
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className={`w-full py-4 px-6 rounded-lg text-white font-semibold
+          ${
+            isSubmitting
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600 transition-colors"
+          }`}
+      >
+        {isSubmitting ? "처리중..." : "가입 완료"}
+      </button>
+    </form>
   );
-};
-
-// 스타일 컴포넌트들은 동일하게 유지
-const StyledForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 32px;
-`;
-
-const StyledImageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 24px;
-`;
-
-const StyledInputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const StyledLabel = styled.label`
-  font-size: 14px;
-  font-weight: 600;
-  color: #4a5568;
-`;
-
-const StyledInput = styled.input`
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 16px;
-
-  &:focus {
-    outline: none;
-    border-color: #4299e1;
-  }
-`;
-
-const StyledButton = styled.button`
-  width: 100%;
-  padding: 16px;
-  background-color: #4299e1;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #3182ce;
-  }
-`;
+}

@@ -1,4 +1,5 @@
-import styled from "styled-components";
+"use client";
+
 import { LoginButton } from "./LoginButton";
 import { LoginFooter } from "./LoginFooter";
 import { LoginHeader } from "./LoginHeader";
@@ -10,46 +11,16 @@ export const LoginContainer = () => {
   };
 
   return (
-    <StyledLoginWrapper>
+    <div className="flex flex-col items-center justify-between min-h-screen bg-gray-50 px-6 py-12">
       <LoginHeader />
-      <StyledContentWrapper>
-        <StyledTitle>SolveMate</StyledTitle>
-        <StyledSubTitle>함께 문제를 해결하는 가장 쉬운 방법</StyledSubTitle>
+      <div className="flex flex-col items-center w-full max-w-md text-center">
+        <h1 className="text-5xl font-bold text-gray-900 mb-4">SolveMate</h1>
+        <p className="text-lg text-gray-600 mb-12">
+          함께 문제를 해결하는 가장 쉬운 방법
+        </p>
         <LoginButton onClick={handleKakaoLogin} />
-      </StyledContentWrapper>
+      </div>
       <LoginFooter />
-    </StyledLoginWrapper>
+    </div>
   );
 };
-
-const StyledLoginWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 100vh;
-  padding: 48px 24px;
-  background-color: #f8f9fa;
-`;
-
-const StyledContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-`;
-
-const StyledTitle = styled.h1`
-  font-size: 48px;
-  font-weight: 700;
-  color: #212529;
-  margin-bottom: 16px;
-`;
-
-const StyledSubTitle = styled.p`
-  font-size: 18px;
-  color: #495057;
-  margin-bottom: 48px;
-`;

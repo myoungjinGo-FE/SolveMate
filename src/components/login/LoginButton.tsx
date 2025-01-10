@@ -1,4 +1,5 @@
-import styled from "styled-components";
+"use client";
+
 import Image from "next/image";
 
 interface LoginButtonProps {
@@ -7,33 +8,14 @@ interface LoginButtonProps {
 
 export const LoginButton = ({ onClick }: LoginButtonProps) => {
   return (
-    <StyledButton onClick={onClick}>
+    <button
+      onClick={onClick}
+      className="flex items-center justify-center w-full px-4 py-4 gap-3 bg-[#FEE500] hover:bg-[#FDD835] rounded-xl transition-colors duration-200"
+    >
       <Image src="/images/vercel.svg" alt="Kakao Logo" width={24} height={24} />
-      <span>카카오로 계속하기</span>
-    </StyledButton>
+      <span className="text-base font-semibold text-[#191919]">
+        카카오로 계속하기
+      </span>
+    </button>
   );
 };
-
-const StyledButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 16px;
-  gap: 12px;
-  background-color: #FEE500;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #FDD835;
-  }
-
-  span {
-    font-size: 16px;
-    font-weight: 600;
-    color: #191919;
-  }
-`;

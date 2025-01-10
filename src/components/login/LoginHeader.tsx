@@ -1,20 +1,15 @@
-import { styled } from "styled-components";
+import Image from "next/image";
 
 export const LoginHeader = () => {
   return (
-    <StyledHeader>
-      <StyledLogo src="/images/logo.svg" alt="SolveMate Logo" />
-    </StyledHeader>
+    <header className="w-full flex justify-center py-4">
+      <Image
+        src="/images/logo.svg"
+        alt="SolveMate Logo"
+        width={128}
+        height={32}
+        className="h-8 w-auto"
+      />
+    </header>
   );
 };
-
-const StyledHeader = styled.header`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 16px 0;
-`;
-
-const StyledLogo = styled.img`
-  height: 32px;
-`;
