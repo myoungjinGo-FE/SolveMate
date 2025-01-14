@@ -1,0 +1,9 @@
+version: "3"
+services:
+  nextjs-app:
+    build: .
+    container_name: nextjs-ssr
+    ports:
+      - "3000:3000" # Next.js 서버가 3000 포트에서 실행될 것
+    environment:
+      - NODE_ENV=production

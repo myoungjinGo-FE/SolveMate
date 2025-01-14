@@ -2,26 +2,15 @@
 
 import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { SignUpFormData } from "@/lib/types/auth";
-import Image from "next/image";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import Image from "next/image";
 
-const signupSchema = z.object({
-  username: z
-    .string()
-    .min(3, "사용자 이름은 최소 3자 이상이어야 합니다")
-    .max(50, "사용자 이름은 50자를 초과할 수 없습니다"),
-  nickname: z
-    .string()
-    .min(2, "닉네임은 최소 2자 이상이어야 합니다")
-    .max(50, "닉네임은 50자를 초과할 수 없습니다"),
-  profileImage: z.string().nullable().optional(),
-  kakaoId: z.string().nullable().optional(),
-});
-
-type SignupFormData = z.infer<typeof signupSchema>;
+interface SignUpFormData {
+  username: string;
+  nickname: string;
+  profileImage: string | null;
+  kakaoId: string | null;
+}
 
 interface SignupFormProps {
   onSubmit: (formData: SignUpFormData) => void;
@@ -35,8 +24,7 @@ function SignupFormContent({ onSubmit }: SignupFormProps) {
     formState: { errors, isSubmitting },
     reset,
     watch,
-  } = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema),
+  } = useForm<SignUpFormData>({
     defaultValues: {
       username: "",
       nickname: "",
@@ -52,9 +40,9 @@ function SignupFormContent({ onSubmit }: SignupFormProps) {
 
     if (kakao_id || username || profile_image) {
       reset({
-        kakaoId: kakao_id ?? undefined,
+        kakaoId: kakao_id ?? null,
         username: username ?? "",
-        profileImage: profile_image ?? undefined,
+        profileImage: profile_image ?? null,
         nickname: username ?? "",
       });
     }
@@ -84,7 +72,17 @@ function SignupFormContent({ onSubmit }: SignupFormProps) {
         </label>
         <input
           id="username"
-          {...register("username")}
+          {...register("username", {
+            required: "사용자 이름을 입력해주세요",
+            minLength: {
+              value: 3,
+              message: "사용자 이름은 최소 3자 이상이어야 합니다",
+            },
+            maxLength: {
+              value: 50,
+              message: "사용자 이름은 50자를 초과할 수 없습니다",
+            },
+          })}
           type="text"
           className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-500"
           placeholder="사용자 이름을 입력해주세요"
@@ -103,7 +101,17 @@ function SignupFormContent({ onSubmit }: SignupFormProps) {
         </label>
         <input
           id="nickname"
-          {...register("nickname")}
+          {...register("nickname", {
+            required: "닉네임을 입력해주세요",
+            minLength: {
+              value: 2,
+              message: "닉네임은 최소 2자 이상이어야 합니다",
+            },
+            maxLength: {
+              value: 50,
+              message: "닉네임은 50자를 초과할 수 없습니다",
+            },
+          })}
           type="text"
           className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-500"
           placeholder="닉네임을 입력해주세요"
@@ -129,7 +137,6 @@ function SignupFormContent({ onSubmit }: SignupFormProps) {
   );
 }
 
-// Loading fallback component
 function SignupFormLoading() {
   return (
     <div className="flex justify-center items-center h-[400px]">
@@ -138,7 +145,6 @@ function SignupFormLoading() {
   );
 }
 
-// Main export component wrapped in Suspense
 export function SignupForm(props: SignupFormProps) {
   return (
     <Suspense fallback={<SignupFormLoading />}>
