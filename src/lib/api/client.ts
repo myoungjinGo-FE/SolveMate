@@ -23,7 +23,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      const { status, data } = error.response;
+      const { data } = error.response;
       throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
     }
     throw error;

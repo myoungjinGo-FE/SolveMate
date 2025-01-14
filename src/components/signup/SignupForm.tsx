@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { SignUpFormData } from "@/lib/types/auth";
 import Image from "next/image";
@@ -27,7 +27,7 @@ interface SignupFormProps {
   onSubmit: (formData: SignUpFormData) => void;
 }
 
-export function SignupForm({ onSubmit }: SignupFormProps) {
+function SignupFormContent({ onSubmit }: SignupFormProps) {
   const searchParams = useSearchParams();
   const {
     register,
@@ -55,7 +55,7 @@ export function SignupForm({ onSubmit }: SignupFormProps) {
         kakaoId: kakao_id ?? undefined,
         username: username ?? "",
         profileImage: profile_image ?? undefined,
-        nickname: username ?? "", // 카카오 이름을 기본 닉네임으로 설정
+        nickname: username ?? "",
       });
     }
   }, [searchParams, reset]);
@@ -126,5 +126,23 @@ export function SignupForm({ onSubmit }: SignupFormProps) {
         {isSubmitting ? "처리중..." : "가입 완료"}
       </button>
     </form>
+  );
+}
+
+// Loading fallback component
+function SignupFormLoading() {
+  return (
+    <div className="flex justify-center items-center h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+    </div>
+  );
+}
+
+// Main export component wrapped in Suspense
+export function SignupForm(props: SignupFormProps) {
+  return (
+    <Suspense fallback={<SignupFormLoading />}>
+      <SignupFormContent {...props} />
+    </Suspense>
   );
 }
