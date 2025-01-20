@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HomePageClient } from "./HomePageClient";
+import Dashboard from "./clinet";
 
 export const metadata: Metadata = {
   title: "홈 - SolveMate",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <HomePageClient />;
+  return <Dashboard />;
 }
