@@ -4,6 +4,18 @@ import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 
 interface SignUpFormData {
   username: string;
@@ -49,98 +61,92 @@ function SignupFormContent({ onSubmit }: SignupFormProps) {
   }, [searchParams, reset]);
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-6 w-full max-w-md mx-auto p-8"
-    >
-      <div className="flex justify-center mb-6">
-        <Image
-          src={watch("profileImage") || "/images/default-profile.png"}
-          alt="Profile"
-          width={100}
-          height={100}
-          className="rounded-full"
-        />
-      </div>
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle>회원가입</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="flex justify-center mb-6">
+            <Image
+              src={watch("profileImage") || "/images/default-profile.png"}
+              alt="Profile"
+              width={100}
+              height={100}
+              className="rounded-full"
+            />
+          </div>
 
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="username"
-          className="text-sm font-semibold text-gray-600"
+          <div className="space-y-2">
+            <Label htmlFor="username">사용자 이름</Label>
+            <Input
+              id="username"
+              {...register("username", {
+                required: "사용자 이름을 입력해주세요",
+                minLength: {
+                  value: 3,
+                  message: "사용자 이름은 최소 3자 이상이어야 합니다",
+                },
+                maxLength: {
+                  value: 50,
+                  message: "사용자 이름은 50자를 초과할 수 없습니다",
+                },
+              })}
+              placeholder="사용자 이름을 입력해주세요"
+            />
+            {errors.username && (
+              <p className="text-sm text-red-500">{errors.username.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="nickname">닉네임</Label>
+            <Input
+              id="nickname"
+              {...register("nickname", {
+                required: "닉네임을 입력해주세요",
+                minLength: {
+                  value: 2,
+                  message: "닉네임은 최소 2자 이상이어야 합니다",
+                },
+                maxLength: {
+                  value: 50,
+                  message: "닉네임은 50자를 초과할 수 없습니다",
+                },
+              })}
+              placeholder="닉네임을 입력해주세요"
+            />
+            {errors.nickname && (
+              <p className="text-sm text-red-500">{errors.nickname.message}</p>
+            )}
+          </div>
+        </form>
+      </CardContent>
+      <CardFooter>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full"
+          onClick={handleSubmit(onSubmit)}
         >
-          사용자 이름
-        </label>
-        <input
-          id="username"
-          {...register("username", {
-            required: "사용자 이름을 입력해주세요",
-            minLength: {
-              value: 3,
-              message: "사용자 이름은 최소 3자 이상이어야 합니다",
-            },
-            maxLength: {
-              value: 50,
-              message: "사용자 이름은 50자를 초과할 수 없습니다",
-            },
-          })}
-          type="text"
-          className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-500"
-          placeholder="사용자 이름을 입력해주세요"
-        />
-        {errors.username && (
-          <p className="text-sm text-red-500">{errors.username.message}</p>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="nickname"
-          className="text-sm font-semibold text-gray-600"
-        >
-          닉네임
-        </label>
-        <input
-          id="nickname"
-          {...register("nickname", {
-            required: "닉네임을 입력해주세요",
-            minLength: {
-              value: 2,
-              message: "닉네임은 최소 2자 이상이어야 합니다",
-            },
-            maxLength: {
-              value: 50,
-              message: "닉네임은 50자를 초과할 수 없습니다",
-            },
-          })}
-          type="text"
-          className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-500"
-          placeholder="닉네임을 입력해주세요"
-        />
-        {errors.nickname && (
-          <p className="text-sm text-red-500">{errors.nickname.message}</p>
-        )}
-      </div>
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className={`w-full py-4 px-6 rounded-lg text-white font-semibold
-          ${
-            isSubmitting
-              ? "bg-blue-300 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-600 transition-colors"
-          }`}
-      >
-        {isSubmitting ? "처리중..." : "가입 완료"}
-      </button>
-    </form>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              처리중...
+            </>
+          ) : (
+            "가입 완료"
+          )}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
 
 function SignupFormLoading() {
   return (
     <div className="flex justify-center items-center h-[400px]">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+      <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
     </div>
   );
 }
