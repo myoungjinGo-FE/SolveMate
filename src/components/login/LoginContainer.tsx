@@ -1,13 +1,13 @@
 "use client";
 
+import { API_BASE_URL } from "@/constants/config";
 import { LoginButton } from "./LoginButton";
 import { LoginFooter } from "./LoginFooter";
 import { LoginHeader } from "./LoginHeader";
 
 export const LoginContainer = () => {
   const handleKakaoLogin = () => {
-    window.location.href =
-      "https://kauth.kakao.com/oauth/authorize?client_id=193e87458436f2acebe89e3acee04f15&redirect_uri=http://localhost:8000/api/oauth/kakao&response_type=code";
+    window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=193e87458436f2acebe89e3acee04f15&redirect_uri=${API_BASE_URL}/api/oauth/kakao&response_type=code`;
   };
 
   return (
