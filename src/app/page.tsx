@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Dashboard from "./clinet";
+import Dashboard from "./client";
 
 export const metadata: Metadata = {
   title: "홈 - SolveMate",

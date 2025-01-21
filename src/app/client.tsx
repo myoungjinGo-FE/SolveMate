@@ -81,7 +81,6 @@ interface DecodedToken {
 }
 
 export default function Dashboard() {
-  const router = useRouter();
   const { clearTokens } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
