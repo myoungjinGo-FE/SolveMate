@@ -26,6 +26,7 @@ import {
   LinkIcon,
   BarChart,
   LogOut,
+  LogIn,
 } from "lucide-react";
 import Link from "next/link";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
@@ -89,14 +90,11 @@ export default function Dashboard() {
     const fetchUserData = async () => {
       try {
         const accessToken = localStorage.getItem("access_token");
-        if (!accessToken) {
-          router.push(ROUTES.AUTH.LOGIN);
-          return;
+        if (accessToken) {
+          const decoded: DecodedToken = jwtDecode(accessToken);
+          const userData = await authAPI.getUserInfo(decoded.user_id);
+          setUser(userData);
         }
-
-        const decoded: DecodedToken = jwtDecode(accessToken);
-        const userData = await authAPI.getUserInfo(decoded.user_id);
-        setUser(userData);
       } catch (error) {
         console.error("사용자 정보 조회 실패:", error);
         toast.error("사용자 정보를 불러오는데 실패했습니다.");
@@ -106,12 +104,12 @@ export default function Dashboard() {
     };
 
     fetchUserData();
-  }, [router]);
+  }, []);
 
   const handleLogout = () => {
     clearTokens();
     toast.success("로그아웃되었습니다.");
-    router.push(ROUTES.AUTH.LOGIN);
+    setUser(null);
   };
 
   if (isLoading) {
@@ -127,16 +125,29 @@ export default function Dashboard() {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold">대시보드</h1>
-          <p className="text-gray-500 mt-2">안녕하세요, {user?.username}님!</p>
+          <p className="text-gray-500 mt-2">
+            {user
+              ? `안녕하세요, ${user.username}님!`
+              : "로그인하고 더 많은 기능을 사용해보세요"}
+          </p>
         </div>
         <div className="flex gap-4">
           <Button asChild>
             <Link href="/problems">모든 문제 보기</Link>
           </Button>
-          <Button variant="destructive" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-2" />
-            로그아웃
-          </Button>
+          {user ? (
+            <Button variant="destructive" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 mr-2" />
+              로그아웃
+            </Button>
+          ) : (
+            <Button variant="default" asChild>
+              <Link href={ROUTES.AUTH.LOGIN}>
+                <LogIn className="w-4 h-4 mr-2" />
+                로그인
+              </Link>
+            </Button>
+          )}
         </div>
       </header>
 
@@ -154,87 +165,112 @@ export default function Dashboard() {
               <p className="text-sm opacity-90 mb-4">
                 난이도: 중급 | 예상 시간: 30분
               </p>
-              <Button size="sm" variant="secondary">
-                문제 풀기
+              {user ? (
+                <Button size="sm" variant="secondary">
+                  문제 풀기
+                </Button>
+              ) : (
+                <Button size="sm" variant="secondary" asChild>
+                  <Link href={ROUTES.AUTH.LOGIN}>로그인하고 풀기</Link>
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+          {user && (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-lg font-medium">주간 통계</CardTitle>
+                <BarChart className="h-6 w-6 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold mb-2">71%</div>
+                <Progress value={71} className="mb-2" />
+                <p className="text-sm text-muted-foreground">
+                  이번 주 5/7 문제 해결
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+        {user ? (
+          <Card className="h-[400px]">
+            <CardHeader>
+              <CardTitle>문제 해결 현황</CardTitle>
+              <CardDescription>1월 - 6월 2024</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[calc(100%-4rem)] pt-0">
+              <ChartContainer config={chartConfig} className="h-full">
+                <LineChart
+                  accessibilityLayer
+                  data={chartData}
+                  margin={{
+                    top: 20,
+                    right: 20,
+                    left: 20,
+                    bottom: 30,
+                  }}
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                    tickFormatter={(value) => value.slice(0, 3)}
+                  />
+                  <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent />}
+                  />
+                  <Line
+                    dataKey="user"
+                    type="monotone"
+                    stroke="var(--color-user)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    dataKey="memberA"
+                    type="monotone"
+                    stroke="var(--color-memberA)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    dataKey="memberB"
+                    type="monotone"
+                    stroke="var(--color-memberB)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    dataKey="memberC"
+                    type="monotone"
+                    stroke="var(--color-memberC)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="flex items-center justify-center h-[400px]">
+            <CardContent className="text-center">
+              <h3 className="text-2xl font-bold mb-4">로그인이 필요합니다</h3>
+              <p className="text-muted-foreground mb-6">
+                문제 해결 현황과 통계를 확인하려면 로그인해주세요
+              </p>
+              <Button asChild>
+                <Link href={ROUTES.AUTH.LOGIN}>
+                  <LogIn className="w-4 h-4 mr-2" />
+                  로그인하기
+                </Link>
               </Button>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-lg font-medium">주간 통계</CardTitle>
-              <BarChart className="h-6 w-6 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold mb-2">71%</div>
-              <Progress value={71} className="mb-2" />
-              <p className="text-sm text-muted-foreground">
-                이번 주 5/7 문제 해결
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-        <Card className="h-[400px]">
-          <CardHeader>
-            <CardTitle>문제 해결 현황</CardTitle>
-            <CardDescription>1월 - 6월 2024</CardDescription>
-          </CardHeader>
-          <CardContent className="h-[calc(100%-4rem)] pt-0">
-            <ChartContainer config={chartConfig} className="h-full">
-              <LineChart
-                accessibilityLayer
-                data={chartData}
-                margin={{
-                  top: 20,
-                  right: 20,
-                  left: 20,
-                  bottom: 30,
-                }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={10}
-                  tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent />}
-                />
-                <Line
-                  dataKey="user"
-                  type="monotone"
-                  stroke="var(--color-user)"
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <Line
-                  dataKey="memberA"
-                  type="monotone"
-                  stroke="var(--color-memberA)"
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <Line
-                  dataKey="memberB"
-                  type="monotone"
-                  stroke="var(--color-memberB)"
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <Line
-                  dataKey="memberC"
-                  type="monotone"
-                  stroke="var(--color-memberC)"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+        )}
       </div>
 
       <Card>
@@ -249,10 +285,14 @@ export default function Dashboard() {
                   <TableHead className="w-[100px]">날짜</TableHead>
                   <TableHead>문제</TableHead>
                   <TableHead className="w-[100px]">난이도</TableHead>
-                  <TableHead className="w-[100px]">내 상태</TableHead>
-                  <TableHead className="w-[100px]">그룹원 A</TableHead>
-                  <TableHead className="w-[100px]">그룹원 B</TableHead>
-                  <TableHead className="w-[100px]">그룹원 C</TableHead>
+                  {user && (
+                    <>
+                      <TableHead className="w-[100px]">내 상태</TableHead>
+                      <TableHead className="w-[100px]">그룹원 A</TableHead>
+                      <TableHead className="w-[100px]">그룹원 B</TableHead>
+                      <TableHead className="w-[100px]">그룹원 C</TableHead>
+                    </>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -272,13 +312,17 @@ export default function Dashboard() {
                       </TableCell>
                       <TableCell>
                         {isFuture ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2 text-blue-500"
-                          >
-                            문제 등록
-                          </Button>
+                          user ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-2 text-blue-500"
+                            >
+                              문제 등록
+                            </Button>
+                          ) : (
+                            "-"
+                          )
                         ) : (
                           "배열에서 중복 제거하기"
                         )}
@@ -286,14 +330,18 @@ export default function Dashboard() {
                       <TableCell>
                         {isFuture ? "-" : <Badge>중급</Badge>}
                       </TableCell>
-                      <TableCell>
-                        {renderStatus(isFuture, isToday, i)}
-                      </TableCell>
-                      {[...Array(3)].map((_, j) => (
-                        <TableCell key={j}>
-                          {!isFuture && renderGroupMemberStatus()}
-                        </TableCell>
-                      ))}
+                      {user && (
+                        <>
+                          <TableCell>
+                            {renderStatus(isFuture, isToday, i)}
+                          </TableCell>
+                          {[...Array(3)].map((_, j) => (
+                            <TableCell key={j}>
+                              {!isFuture && renderGroupMemberStatus()}
+                            </TableCell>
+                          ))}
+                        </>
+                      )}
                     </TableRow>
                   );
                 })}
