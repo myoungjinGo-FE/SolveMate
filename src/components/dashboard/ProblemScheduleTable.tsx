@@ -1,5 +1,4 @@
-import React from "react";
-import { User } from "@/lib/types/auth";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -12,7 +11,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { CheckCircle2, XCircle, LinkIcon } from "lucide-react";
-import Link from "next/link";
+import { User } from "@/lib/types/users";
 
 interface ProblemScheduleTableProps {
   user: User | null;

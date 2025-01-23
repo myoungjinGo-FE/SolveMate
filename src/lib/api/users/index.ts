@@ -1,7 +1,7 @@
-import { apiClient } from "./client";
-import { SignUpFormData, SignUpRequest, User } from "../types/auth";
+import { apiClient } from "@/lib/api-client";
+import { SignUpFormData, SignUpRequest, User } from "@/lib/types/users";
 
-export const authAPI = {
+export const UsersAPI = {
   signUp: async (formData: SignUpFormData): Promise<User> => {
     const requestData: SignUpRequest = {
       username: formData.username,
@@ -16,9 +16,6 @@ export const authAPI = {
     );
     return response.data;
   },
-
-  getKakaoAuthUrl: () => `${apiClient.defaults.baseURL}/oauth/kakao`,
-
   getUserInfo: async (userId: number): Promise<User> => {
     const response = await apiClient.get<User>(`/api/users/${userId}`);
     return response.data;

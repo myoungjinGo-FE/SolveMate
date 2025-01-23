@@ -1,9 +1,10 @@
 import { ROUTES } from "@/constants/routes";
-import { User } from "@/lib/types/auth";
-import { Progress } from "@radix-ui/react-progress";
-import { Code2, Link, BarChart } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Code2, BarChart } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { User } from "@/lib/types/users";
+import Link from "next/link";
 
 interface TodaysProblemCardProps {
   user: User | null;
@@ -12,6 +13,7 @@ interface TodaysProblemCardProps {
 export function TodaysProblemCard({ user }: TodaysProblemCardProps) {
   return (
     <div className="grid gap-6">
+      {/* 오늘의 문제 카드 */}
       <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-medium">오늘의 문제</CardTitle>
@@ -27,12 +29,16 @@ export function TodaysProblemCard({ user }: TodaysProblemCardProps) {
               문제 풀기
             </Button>
           ) : (
-            <Button size="sm" variant="secondary" asChild>
-              <Link href={ROUTES.AUTH.LOGIN}>로그인하고 풀기</Link>
-            </Button>
+            <Link href={ROUTES.AUTH.LOGIN}>
+              <Button size="sm" variant="secondary">
+                로그인하고 풀기
+              </Button>
+            </Link>
           )}
         </CardContent>
       </Card>
+
+      {/* 주간 통계 카드 */}
       {user && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">

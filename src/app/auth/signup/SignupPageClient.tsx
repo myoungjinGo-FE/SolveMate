@@ -3,16 +3,16 @@
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
 import { toast } from "react-hot-toast";
-import { authAPI } from "@/lib/api/auth";
-import { SignUpFormData } from "@/lib/types/auth";
 import { SignupForm } from "@/components/signup/SignupForm";
+import { SignUpFormData } from "@/lib/types/users";
+import { UsersAPI } from "@/lib/api/users";
 
 export function SignupPageClient() {
   const router = useRouter();
 
   const handleSignup = async (formData: SignUpFormData) => {
     try {
-      await authAPI.signUp(formData);
+      await UsersAPI.signUp(formData);
       toast.success("회원가입이 성공적으로 완료되었습니다!");
       router.push(ROUTES.HOME);
     } catch (error) {

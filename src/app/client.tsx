@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-hot-toast";
-import { User } from "@/lib/types/auth";
-import { authAPI } from "@/lib/api/auth";
 import { useAuth } from "@/hooks/userAuth";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { TodaysProblemCard } from "@/components/dashboard/TodaysProblemCard";
 import { ProblemSolvingChart } from "@/components/dashboard/ProblemSolvingChart";
 import { ProblemScheduleTable } from "@/components/dashboard/ProblemScheduleTable";
+import { User } from "@/lib/types/users";
+import { UsersAPI } from "@/lib/api/users";
 
 interface DecodedToken {
   user_id: number;
@@ -30,7 +30,7 @@ export default function Dashboard() {
         const accessToken = localStorage.getItem("access_token");
         if (accessToken) {
           const decoded: DecodedToken = jwtDecode(accessToken);
-          const userData = await authAPI.getUserInfo(decoded.user_id);
+          const userData = await UsersAPI.getUserInfo(decoded.user_id);
           setUser(userData);
         }
       } catch (error) {

@@ -1,6 +1,5 @@
 import { ROUTES } from "@/constants/routes";
-import { User } from "@/lib/types/auth";
-import { Link, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -16,6 +15,8 @@ import {
   ChartTooltipContent,
 } from "../ui/chart";
 import { Button } from "../ui/button";
+import { User } from "@/lib/types/users";
+import Link from "next/link";
 
 interface ProblemSolvingChartProps {
   user: User | null;
@@ -56,14 +57,14 @@ export function ProblemSolvingChart({ user }: ProblemSolvingChartProps) {
         <CardContent className="text-center">
           <h3 className="text-2xl font-bold mb-4">로그인이 필요합니다</h3>
           <p className="text-muted-foreground mb-6">
-            문제 해결 현황과 통계를 확인하려면 로그인해주세요
+            문제 해결 현황과 통계를 확인하려면 로그인해주세요.
           </p>
-          <Button asChild>
-            <Link href={ROUTES.AUTH.LOGIN}>
+          <Link href={ROUTES.AUTH.LOGIN}>
+            <Button variant="default">
               <LogIn className="w-4 h-4 mr-2" />
               로그인하기
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     );

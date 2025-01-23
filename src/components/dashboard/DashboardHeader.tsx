@@ -1,7 +1,8 @@
 import { ROUTES } from "@/constants/routes";
-import { User } from "@/lib/types/auth";
-import { Link, LogOut, LogIn } from "lucide-react";
+import { LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { User } from "@/lib/types/users";
+import Link from "next/link";
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -26,12 +27,12 @@ export function DashboardHeader({ user, onLogout }: DashboardHeaderProps) {
             로그아웃
           </Button>
         ) : (
-          <Button variant="default" asChild>
-            <Link href={ROUTES.AUTH.LOGIN}>
+          <Link href={ROUTES.AUTH.LOGIN}>
+            <Button variant="default">
               <LogIn className="w-4 h-4 mr-2" />
               로그인
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         )}
       </div>
     </header>
