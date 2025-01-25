@@ -1,19 +1,9 @@
 import { apiClient } from "@/lib/api-client";
-import { SignUpFormData, SignUpRequest, User } from "@/lib/types/users";
+import { SignUpFormData, User } from "@/lib/types/users";
 
 export const UsersAPI = {
   signUp: async (formData: SignUpFormData): Promise<User> => {
-    const requestData: SignUpRequest = {
-      username: formData.username,
-      nickname: formData.nickname,
-      profile_picture: formData.profileImage || null,
-      kakao_id: formData.kakaoId || null,
-    };
-
-    const response = await apiClient.post<User>(
-      "/api/users/sign-up",
-      requestData
-    );
+    const response = await apiClient.post<User>("/api/users/sign-up", formData);
     return response.data;
   },
   getUserInfo: async (userId: number): Promise<User> => {
