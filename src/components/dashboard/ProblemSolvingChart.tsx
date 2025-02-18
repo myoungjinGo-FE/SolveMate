@@ -1,4 +1,3 @@
-import { ROUTES } from "@/constants/routes";
 import { LogIn } from "lucide-react";
 import {
   Card,
@@ -17,6 +16,7 @@ import {
 import { Button } from "../ui/button";
 import { User } from "@/lib/types/users";
 import Link from "next/link";
+import { KAKAO_REDIRECT_URI } from "@/constants/config";
 
 interface ProblemSolvingChartProps {
   user: User | null;
@@ -59,7 +59,7 @@ export function ProblemSolvingChart({ user }: ProblemSolvingChartProps) {
           <p className="text-muted-foreground mb-6">
             문제 해결 현황과 통계를 확인하려면 로그인해주세요.
           </p>
-          <Link href={ROUTES.AUTH.LOGIN}>
+          <Link href={KAKAO_REDIRECT_URI}>
             <Button variant="default">
               <LogIn className="w-4 h-4 mr-2" />
               로그인하기

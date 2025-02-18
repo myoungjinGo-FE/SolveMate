@@ -1,8 +1,8 @@
-import { ROUTES } from "@/constants/routes";
 import { LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { User } from "@/lib/types/users";
 import Link from "next/link";
+import { KAKAO_REDIRECT_URI } from "@/constants/config";
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -27,7 +27,7 @@ export function DashboardHeader({ user, onLogout }: DashboardHeaderProps) {
             로그아웃
           </Button>
         ) : (
-          <Link href={ROUTES.AUTH.LOGIN}>
+          <Link href={KAKAO_REDIRECT_URI}>
             <Button variant="default">
               <LogIn className="w-4 h-4 mr-2" />
               로그인

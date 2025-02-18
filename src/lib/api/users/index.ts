@@ -10,4 +10,8 @@ export const UsersAPI = {
     const response = await apiClient.get<User>(`/api/users/${userId}`);
     return response.data;
   },
+  me: async (): Promise<User> => {
+    const response = await apiClient.get<User>(`/api/users/me`);
+    return response.data;
+  },
 };

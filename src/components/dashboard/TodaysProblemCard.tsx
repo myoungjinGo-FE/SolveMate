@@ -1,10 +1,10 @@
-import { ROUTES } from "@/constants/routes";
 import { Progress } from "@/components/ui/progress";
 import { Code2, BarChart } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { User } from "@/lib/types/users";
 import Link from "next/link";
+import { KAKAO_REDIRECT_URI } from "@/constants/config";
 
 interface TodaysProblemCardProps {
   user: User | null;
@@ -13,7 +13,6 @@ interface TodaysProblemCardProps {
 export function TodaysProblemCard({ user }: TodaysProblemCardProps) {
   return (
     <div className="grid gap-6">
-      {/* 오늘의 문제 카드 */}
       <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-medium">오늘의 문제</CardTitle>
@@ -29,7 +28,7 @@ export function TodaysProblemCard({ user }: TodaysProblemCardProps) {
               문제 풀기
             </Button>
           ) : (
-            <Link href={ROUTES.AUTH.LOGIN}>
+            <Link href={KAKAO_REDIRECT_URI}>
               <Button size="sm" variant="secondary">
                 로그인하고 풀기
               </Button>
