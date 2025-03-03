@@ -12,7 +12,11 @@ export function SignupPageClient() {
 
   const handleSignup = async (formData: SignUpFormData) => {
     try {
-      await UsersAPI.signUp(formData);
+      const userInfo = await UsersAPI.signUp(formData);
+
+      localStorage.setItem("access_token", userInfo.access_token);
+      localStorage.setItem("refresh_token", userInfo.refresh_token);
+
       toast.success("회원가입이 성공적으로 완료되었습니다!");
       router.push(ROUTES.HOME);
     } catch (error) {

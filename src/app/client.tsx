@@ -18,8 +18,11 @@ export default function Dashboard() {
 
   // 토큰 처리 로직
   useEffect(() => {
-    const accessToken = searchParams.get("access_token");
-    const refreshToken = searchParams.get("refresh_token");
+    const accessToken =
+      searchParams.get("access_token") || localStorage.getItem("access_token");
+    const refreshToken =
+      searchParams.get("refresh_token") ||
+      localStorage.getItem("refresh_token");
 
     // 토큰이 URL에 있고 아직 리다이렉트하지 않은 경우에만 처리
     if (accessToken && refreshToken) {

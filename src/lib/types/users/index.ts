@@ -9,7 +9,11 @@ export interface User {
 export interface SignUpFormData {
   username: string;
   nickname: string;
-  profileImage?: string | null;
-  kakaoId?: string | null;
+  profile_picture?: string | null;
+  kakao_id?: string | null;
 }
-//
+
+export interface UserWithToken extends User {
+  access_token: string;
+  refresh_token: string;
+}

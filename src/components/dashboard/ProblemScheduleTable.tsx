@@ -1,24 +1,53 @@
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+"use client";
+
+import { useState } from "react";
 import {
   Table,
-  TableHeader,
-  TableRow,
-  TableHead,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, XCircle, LinkIcon } from "lucide-react";
+import Link from "next/link";
 import { User } from "@/lib/types/users";
+import { Problem } from "@/lib/types/problems";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ProblemRegistrationModal } from "@/components/dashboard/ProblemRegistrationModal";
 
 interface ProblemScheduleTableProps {
   user: User | null;
 }
 
 export function ProblemScheduleTable({ user }: ProblemScheduleTableProps) {
-  function renderStatus(isFuture: boolean, isToday: boolean, index: number) {
+  const [problems, setProblems] = useState<{ [date: string]: Problem }>({});
+
+  const handleProblemRegistration = (
+    problem: Problem | null,
+    isNew: boolean,
+    date: Date
+  ) => {
+    if (problem) {
+      setProblems((prev) => ({
+        ...prev,
+        [date.toISOString()]: problem,
+      }));
+    }
+  };
+
+  // Helper function to render the status
+  const renderStatus = (isFuture: boolean, isToday: boolean, index: number) => {
     if (isFuture) return null;
     if (isToday)
       return (
@@ -42,9 +71,10 @@ export function ProblemScheduleTable({ user }: ProblemScheduleTableProps) {
         </Link>
       </div>
     );
-  }
+  };
 
-  function renderGroupMemberStatus() {
+  // Helper function to render group member status
+  const renderGroupMemberStatus = () => {
     const solved = Math.random() > 0.5;
     return (
       <div className="flex items-center space-x-1">
@@ -62,7 +92,7 @@ export function ProblemScheduleTable({ user }: ProblemScheduleTableProps) {
         </Link>
       </div>
     );
-  }
+  };
 
   return (
     <Card>
@@ -77,14 +107,10 @@ export function ProblemScheduleTable({ user }: ProblemScheduleTableProps) {
                 <TableHead className="w-[100px]">날짜</TableHead>
                 <TableHead>문제</TableHead>
                 <TableHead className="w-[100px]">난이도</TableHead>
-                {user && (
-                  <>
-                    <TableHead className="w-[100px]">내 상태</TableHead>
-                    <TableHead className="w-[100px]">그룹원 A</TableHead>
-                    <TableHead className="w-[100px]">그룹원 B</TableHead>
-                    <TableHead className="w-[100px]">그룹원 C</TableHead>
-                  </>
-                )}
+                <TableHead className="w-[100px]">내 상태</TableHead>
+                <TableHead className="w-[100px]">그룹원 A</TableHead>
+                <TableHead className="w-[100px]">그룹원 B</TableHead>
+                <TableHead className="w-[100px]">그룹원 C</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -93,6 +119,7 @@ export function ProblemScheduleTable({ user }: ProblemScheduleTableProps) {
                 date.setDate(date.getDate() - 2 + i);
                 const isToday = i === 2;
                 const isFuture = i > 2;
+                const problem = problems[date.toISOString()];
                 return (
                   <TableRow key={i} className={isToday ? "bg-muted/50" : ""}>
                     <TableCell className="font-medium">
@@ -104,36 +131,48 @@ export function ProblemScheduleTable({ user }: ProblemScheduleTableProps) {
                     </TableCell>
                     <TableCell>
                       {isFuture ? (
-                        user ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2 text-blue-500"
-                          >
-                            문제 등록
-                          </Button>
-                        ) : (
-                          "-"
-                        )
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-2 text-blue-500"
+                            >
+                              문제 등록
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>문제 등록</DialogTitle>
+                              <DialogDescription>
+                                기존 문제를 선택하거나 새 문제를 등록하세요.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <ProblemRegistrationModal
+                              date={date}
+                              onRegister={handleProblemRegistration}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                      ) : problem ? (
+                        problem.title
                       ) : (
                         "배열에서 중복 제거하기"
                       )}
                     </TableCell>
                     <TableCell>
-                      {isFuture ? "-" : <Badge>중급</Badge>}
+                      {isFuture ? (
+                        "-"
+                      ) : (
+                        <Badge>{problem ? problem.difficulty : "중급"}</Badge>
+                      )}
                     </TableCell>
-                    {user && (
-                      <>
-                        <TableCell>
-                          {renderStatus(isFuture, isToday, i)}
-                        </TableCell>
-                        {[...Array(3)].map((_, j) => (
-                          <TableCell key={j}>
-                            {!isFuture && renderGroupMemberStatus()}
-                          </TableCell>
-                        ))}
-                      </>
-                    )}
+                    <TableCell>{renderStatus(isFuture, isToday, i)}</TableCell>
+                    {[...Array(3)].map((_, j) => (
+                      <TableCell key={j}>
+                        {!isFuture && renderGroupMemberStatus()}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 );
               })}

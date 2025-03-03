@@ -19,8 +19,8 @@ import { Loader2 } from "lucide-react";
 interface SignUpFormData {
   username: string;
   nickname: string;
-  profileImage: string | null;
-  kakaoId: string | null;
+  profile_picture: string | null;
+  kakao_id: string | null;
 }
 
 interface SignupFormProps {
@@ -39,21 +39,21 @@ function SignupFormContent({ onSubmit }: SignupFormProps) {
     defaultValues: {
       username: "",
       nickname: "",
-      profileImage: null,
-      kakaoId: null,
+      profile_picture: null,
+      kakao_id: null,
     },
   });
 
   useEffect(() => {
     const kakao_id = searchParams?.get("kakao_id");
     const username = searchParams?.get("username");
-    const profile_image = searchParams?.get("profile_image");
+    const profile_picture = searchParams?.get("profile_image");
 
-    if (kakao_id || username || profile_image) {
+    if (kakao_id || username || profile_picture) {
       reset({
-        kakaoId: kakao_id ?? null,
+        kakao_id: kakao_id ?? null,
         username: username ?? "",
-        profileImage: profile_image ?? null,
+        profile_picture: profile_picture ?? null,
         nickname: username ?? "",
       });
     }
@@ -68,7 +68,7 @@ function SignupFormContent({ onSubmit }: SignupFormProps) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex justify-center mb-6">
             <Image
-              src={watch("profileImage") || "/images/default-profile.png"}
+              src={watch("profile_picture") || "/images/default-profile.png"}
               alt="Profile"
               width={100}
               height={100}
