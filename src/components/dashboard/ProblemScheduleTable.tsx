@@ -30,7 +30,7 @@ interface ProblemScheduleTableProps {
   user: User | null;
 }
 
-export function ProblemScheduleTable({ user }: ProblemScheduleTableProps) {
+export function ProblemScheduleTable({}: ProblemScheduleTableProps) {
   const [problems, setProblems] = useState<{ [date: string]: Problem }>({});
 
   const handleProblemRegistration = (

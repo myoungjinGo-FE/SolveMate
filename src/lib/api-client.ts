@@ -58,7 +58,7 @@ apiClient.interceptors.response.use(
 
         // 원래 요청 재시도
         return apiClient(originalRequest);
-      } catch (refreshError) {
+      } catch {
         // 토큰 갱신 실패 시 로그아웃 및 홈으로 리다이렉트
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
